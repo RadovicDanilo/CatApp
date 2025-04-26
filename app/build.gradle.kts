@@ -2,11 +2,12 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
 }
 
-kotlin {
-    jvmToolchain(17)
-}
+val catApiKey: String = project.findProperty("catApiKey") as? String ?: ""
 
 android {
     namespace = "com.example.catapp"
@@ -20,6 +21,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "CAT_API_KEY", "\"$catApiKey\"")
     }
 
     buildTypes {
@@ -30,7 +33,6 @@ android {
             )
         }
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -40,26 +42,60 @@ android {
         jvmTarget = "17"
     }
 
+    kotlin {
+        jvmToolchain(17)
+    }
+
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+
+    hilt {
+        enableAggregatingTask = true
     }
 }
 
 dependencies {
     // Core
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.activity.ktx)
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui.material3)
+    implementation(libs.androidx.ui.animation)
+    implementation(libs.androidx.ui.material.icons.extended)
 
     // Navigation
-    implementation(libs.androidx.navigation.compose)
+    implementation(libs.navigation.compose)
+
+    // DI
+    ksp(libs.bundles.hilt.compiler)
+    implementation(libs.bundles.hilt)
+
+    // KotlinX Serialization
+    implementation(libs.kotlinx.serialization.json)
+
+    // OkHttp
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
+    testImplementation(libs.okhttp.mockwebserver)
+
+    // Retrofit
+    implementation(libs.retrofit2)
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+
+    // Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     // Tests
     testImplementation(libs.junit)
