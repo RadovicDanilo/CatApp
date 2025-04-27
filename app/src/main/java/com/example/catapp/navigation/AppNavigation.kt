@@ -13,16 +13,24 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.catapp.breed_details.BreadDetailScreen
 import com.example.catapp.breed_details.BreadDetailsViewModel
+import com.example.catapp.breed_list.BreadListScreen
+import com.example.catapp.breed_list.BreadListViewModel
+
+private fun NavController.navigateToDetails(id: String) {
+    this.navigate(route = "details/$id")
+}
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
 
     NavHost(
-        navController = navController, startDestination = "details/aege"
+        navController = navController, startDestination = "list"
     ) {
         composable(route = "list") {
-
+            BreadListScreen(viewModel = hiltViewModel<BreadListViewModel>(), onBreadClick = { id ->
+                navController.navigateToDetails(id = id)
+            })
         }
 
         breadDetails(

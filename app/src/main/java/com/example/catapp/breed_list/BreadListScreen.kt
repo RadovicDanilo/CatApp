@@ -14,48 +14,70 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.catapp.core.compose.LoadingIndicator
+import com.example.catapp.core.compose.NoDataContent
+import com.example.catapp.core.compose.PasswordAppTopBar
+import com.example.catapp.users.list.model.SimpleBreadUiModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BreadListScreen(
-    onBreadClick: (id: Int) -> Unit,
+    viewModel: BreadListViewModel,
+    onBreadClick: (id: String) -> Unit,
 ) {
-    Scaffold(
-        topBar = {
-            SearchBar()
-        },
-    ) { padding ->
-        BreadList(padding, onBreadClick)
+    val uiState = viewModel.state.collectAsState()
+    Scaffold(topBar = {
+        PasswordAppTopBar(
+            modifier = Modifier.padding(8.dp), text = "CatApp", actionIcon = Icons.Default.Search
+        )
+    }) { padding ->
+        if (uiState.value.error != null) {
+            NoDataContent(
+                text = "Error = ${uiState.value.error!!.message}"
+            )
+        } else if (uiState.value.isLoading) {
+            LoadingIndicator()
+        } else if (uiState.value.breads.isEmpty()) {
+            NoDataContent(
+                text = "No information on breads"
+            )
+        } else {
+            BreadList(padding, onBreadClick, uiState.value.breads)
+        }
     }
 }
 
 @Composable
 private fun BreadList(
-    padding: PaddingValues, onBreadClick: (Int) -> Unit
+    padding: PaddingValues, onBreadClick: (String) -> Unit, breads: List<SimpleBreadUiModel>
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(padding)
+        modifier = Modifier.padding(padding)
     ) {
-        itemsIndexed(List(10) { it }) { index, _ ->
+
+        items(breads) { bread ->
             BreadListItem(
-                breadName = "Norwegian Forest",
-                alternateBreadName = "Skogkatt",
-                description = "Strong, long-haired breed with a calm temperament and a love for climbing.Strong, long-haired breed with a calm temperament and a love for climbing.Strong, long-haired breed with a calm temperament and a love for climbing.Strong, long-haired breed with a calm temperament and a love for climbing.Strong, long-haired breed with a calm temperament and a love for climbing.Strong, long-haired breed with a calm temperament and a love for climbing.Strong, long-haired breed with a calm temperament and a love for climbing.Strong, long-haired breed with a calm temperament and a love for climbing.",
-                traits = arrayOf(
-                    "Fluffy", "Friendly", "Large", "Independent", "Agile", "ERR", "ERR"
-                ),
-                onBreadClick = { onBreadClick(index) })
+                breadId = bread.id,
+                breadName = bread.name,
+                alternateBreadName = bread.altNames,
+                description = bread.description,
+                traits = bread.traits,
+                onBreadClick = onBreadClick
+            )
         }
     }
 }
@@ -63,19 +85,19 @@ private fun BreadList(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun BreadListItem(
+    breadId: String,
     breadName: String,
     alternateBreadName: String?,
     description: String,
     traits: Array<String>,
-    onBreadClick: (id: Int) -> Unit,
+    onBreadClick: (String) -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .border(1.dp, MaterialTheme.colorScheme.onSurface)
-            .clickable { onBreadClick }
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-            .verticalScroll(state = rememberScrollState())) {
+            .clickable { onBreadClick(breadId) }
+            .padding(horizontal = 16.dp, vertical = 12.dp)) {
         Text(
             text = breadName,
             style = MaterialTheme.typography.titleLarge,

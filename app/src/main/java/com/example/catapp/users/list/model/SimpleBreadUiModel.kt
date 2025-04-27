@@ -10,11 +10,11 @@ data class SimpleBreadUiModel(
     val traits: Array<String>
 ) {
     constructor(breadApiModel: BreadApiModel) : this(
-        breadApiModel.id,
-        breadApiModel.name,
-        breadApiModel.altNames,
-        breadApiModel.altNames,
-        breadApiModel.temperament.split(", ").toTypedArray()
+        breadApiModel.id ?: "",
+        breadApiModel.name ?: "",
+        breadApiModel.altNames ?: "",
+        breadApiModel.altNames ?: "",
+        breadApiModel.temperament?.split(", ")?.toTypedArray() ?: emptyArray()
     )
 
     override fun equals(other: Any?): Boolean {

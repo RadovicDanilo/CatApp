@@ -66,7 +66,7 @@ fun BreadDetailScreen(
             LoadingIndicator()
         } else {
             BreadDetails(
-                uiState.value.details!!,uiState.value.imageApiModel!!, padding
+                uiState.value.details!!, uiState.value.imageApiModel!!, padding
             )
         }
     }
@@ -99,7 +99,7 @@ fun BreadDetails(data: DetailedBreadUiModel, image: ImageApiModel, padding: Padd
             }
         }
 
-        BreadPicture(image.url)
+        BreadPicture(image.url.toString())
 
         Text(
             text = data.description,
