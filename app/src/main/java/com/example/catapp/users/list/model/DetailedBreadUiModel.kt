@@ -32,7 +32,8 @@ data class DetailedBreadUiModel(
     val sheddingLevel: Int,
     val socialNeeds: Int,
     val strangerFriendly: Int,
-    val vocalisation: Int
+    val vocalisation: Int,
+    val wikipediaUrl: String,
 ) {
     constructor(apiModel: BreadApiModel) : this(
         id = apiModel.id,
@@ -64,7 +65,8 @@ data class DetailedBreadUiModel(
         sheddingLevel = apiModel.sheddingLevel,
         socialNeeds = apiModel.socialNeeds,
         strangerFriendly = apiModel.strangerFriendly,
-        vocalisation = apiModel.vocalisation
+        vocalisation = apiModel.vocalisation,
+        wikipediaUrl = apiModel.wikipediaUrl
     )
 
     override fun equals(other: Any?): Boolean {

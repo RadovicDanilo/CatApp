@@ -26,19 +26,18 @@ class BreadDetailsViewModel @Inject constructor(
     private fun setState(reducer: UiState.() -> UiState) = _state.update(reducer)
 
     init {
-        fetchDetails()
+        fetchData()
     }
 
-    private fun fetchDetails() {
+    private fun fetchData() {
         viewModelScope.launch {
-            setState { copy(isLoading = true) }
             try {
-                val data = DetailedBreadUiModel(repository.fetchBread(breadId))
-                setState { copy(data = data) }
+                val details = DetailedBreadUiModel(repository.fetchBread(breadId))
+                val image = repository.getImageById(details.imageId)
+                setState { copy(details = details, imageApiModel = image) }
+
             } catch (error: Exception) {
                 setState { copy(error = error) }
-            } finally {
-                setState { copy(isLoading = false) }
             }
         }
     }

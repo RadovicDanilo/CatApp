@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SuggestionChip
@@ -38,8 +40,7 @@ fun BreadListScreen(
 
 @Composable
 private fun BreadList(
-    padding: PaddingValues,
-    onBreadClick: (Int) -> Unit
+    padding: PaddingValues, onBreadClick: (Int) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -73,7 +74,8 @@ fun BreadListItem(
             .fillMaxWidth()
             .border(1.dp, MaterialTheme.colorScheme.onSurface)
             .clickable { onBreadClick }
-            .padding(horizontal = 16.dp, vertical = 12.dp)) {
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .verticalScroll(state = rememberScrollState())) {
         Text(
             text = breadName,
             style = MaterialTheme.typography.titleLarge,

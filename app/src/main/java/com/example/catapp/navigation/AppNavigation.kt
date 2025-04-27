@@ -19,7 +19,7 @@ fun AppNavigation() {
     val navController = rememberNavController()
 
     NavHost(
-        navController = navController, startDestination = "details/abys"
+        navController = navController, startDestination = "details/aege"
     ) {
         composable(route = "list") {
 
