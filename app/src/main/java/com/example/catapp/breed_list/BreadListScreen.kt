@@ -1,6 +1,5 @@
 package com.example.catapp.breed_list
 
-import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,23 +8,28 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.catapp.core.compose.LoadingIndicator
@@ -39,37 +43,73 @@ fun BreadListScreen(
     viewModel: BreadListViewModel,
     onBreadClick: (id: String) -> Unit,
 ) {
-    val uiState = viewModel.state.collectAsState()
-    Scaffold(topBar = {
-        PasswordAppTopBar(
-            modifier = Modifier.padding(8.dp), text = "CatApp", actionIcon = Icons.Default.Search
-        )
-    }) { padding ->
-        if (uiState.value.error != null) {
-            NoDataContent(
-                text = "Error = ${uiState.value.error!!.message}"
+    val uiState by viewModel.state.collectAsState()
+    var isSearchOpen by rememberSaveable { mutableStateOf(false) }
+
+    Scaffold(
+        topBar = {
+            PasswordAppTopBar(
+                modifier = Modifier.padding(8.dp),
+                text = "CatApp",
+                actionIcon = Icons.Default.Search,
+                actionOnClick = {
+                    isSearchOpen = !isSearchOpen
+                    viewModel.onEvent(BreadListScreenContract.UiEvent.UpdateSearchTerm(""))
+                })
+        }) { paddingValues ->
+        when {
+            uiState.error != null -> NoDataContent(text = "Error = ${uiState.error!!.message ?: "Unknown error"}")
+            uiState.isLoading -> LoadingIndicator()
+            uiState.breads.isEmpty() -> NoDataContent(text = "No information on breeds")
+            else -> Content(
+                paddingValues = paddingValues,
+                uiState = uiState,
+                viewModel = viewModel,
+                isSearchOpen = isSearchOpen,
+                onSearchClose = {
+                    isSearchOpen = !isSearchOpen
+                    viewModel.onEvent(BreadListScreenContract.UiEvent.UpdateSearchTerm(""))
+                },
+                onBreadClick = onBreadClick
             )
-        } else if (uiState.value.isLoading) {
-            LoadingIndicator()
-        } else if (uiState.value.breads.isEmpty()) {
-            NoDataContent(
-                text = "No information on breads"
-            )
-        } else {
-            BreadList(padding, onBreadClick, uiState.value.breads)
         }
     }
 }
 
 @Composable
-private fun BreadList(
-    padding: PaddingValues, onBreadClick: (String) -> Unit, breads: List<SimpleBreadUiModel>
+private fun Content(
+    paddingValues: PaddingValues,
+    uiState: BreadListScreenContract.UiState,
+    viewModel: BreadListViewModel,
+    isSearchOpen: Boolean,
+    onSearchClose: () -> Unit,
+    onBreadClick: (String) -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier.padding(padding)
-    ) {
+    Column(modifier = Modifier.padding(paddingValues)) {
+        if (isSearchOpen) {
+            SearchBar(searchText = uiState.searchTerm, onTextChange = { newText ->
+                viewModel.onEvent(
+                    BreadListScreenContract.UiEvent.UpdateSearchTerm(newText)
+                )
+            }, onClose = {
+                onSearchClose()
+            })
+        }
 
-        items(breads) { bread ->
+        BreadList(
+            breads = uiState.breads, searchTerm = uiState.searchTerm, onBreadClick = onBreadClick
+        )
+    }
+}
+
+@Composable
+private fun BreadList(
+    breads: List<SimpleBreadUiModel>, searchTerm: String, onBreadClick: (String) -> Unit
+) {
+    val filteredBreads = filterBreeds(breads, searchTerm)
+
+    LazyColumn(modifier = Modifier.padding(8.dp)) {
+        items(filteredBreads) { bread ->
             BreadListItem(
                 breadId = bread.id,
                 breadName = bread.name,
@@ -82,9 +122,8 @@ private fun BreadList(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun BreadListItem(
+private fun BreadListItem(
     breadId: String,
     breadName: String,
     alternateBreadName: String?,
@@ -127,8 +166,8 @@ fun BreadListItem(
     }
 }
 
-@Composable
 @OptIn(ExperimentalLayoutApi::class)
+@Composable
 private fun TraitChips(traits: Array<String>) {
     FlowRow(
         modifier = Modifier.fillMaxWidth(),
@@ -136,16 +175,43 @@ private fun TraitChips(traits: Array<String>) {
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         traits.take(5).forEach { trait ->
-            SuggestionChip(onClick = { Log.d("SuggestionChip", "hello world!") }, label = {
-                Text(
-                    text = trait, style = MaterialTheme.typography.labelLarge
-                )
-            })
+            SuggestionChip(
+                onClick = {},
+                label = { Text(text = trait, style = MaterialTheme.typography.labelLarge) })
         }
     }
 }
 
 @Composable
-fun SearchBar() {
+private fun SearchBar(
+    searchText: String, onTextChange: (String) -> Unit, onClose: () -> Unit
+) {
+    OutlinedTextField(
+        value = searchText,
+        onValueChange = onTextChange,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        placeholder = { Text("Search...") },
+        trailingIcon = {
+            IconButton(onClick = onClose) {
+                Icon(Icons.Default.Close, contentDescription = "Close Search")
+            }
+        },
+        singleLine = true
+    )
+}
 
+private fun filterBreeds(
+    breads: List<SimpleBreadUiModel>, searchTerm: String
+): List<SimpleBreadUiModel> {
+    return if (searchTerm.isBlank()) {
+        breads
+    } else {
+        breads.filter {
+            it.name.contains(searchTerm, ignoreCase = true) || it.altNames.contains(
+                searchTerm, ignoreCase = true
+            )
+        }
+    }
 }

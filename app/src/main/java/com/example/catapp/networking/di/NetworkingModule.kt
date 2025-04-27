@@ -1,7 +1,5 @@
 package com.example.catapp.networking.di
 
-import android.util.Log
-import com.example.catapp.BuildConfig
 import com.example.catapp.networking.serialization.NetworkingJson
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module

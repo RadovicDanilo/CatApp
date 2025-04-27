@@ -2,7 +2,6 @@ package com.example.catapp.users.api
 
 import com.example.catapp.users.api.model.BreadApiModel
 import com.example.catapp.users.api.model.ImageApiModel
-import okhttp3.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

@@ -2,6 +2,7 @@ package com.example.catapp.breed_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.catapp.breed_list.BreadListScreenContract.UiEvent
 import com.example.catapp.breed_list.BreadListScreenContract.UiState
 import com.example.catapp.users.list.model.SimpleBreadUiModel
 import com.example.catapp.users.repository.BreadRepository
@@ -37,6 +38,14 @@ class BreadListViewModel @Inject constructor(
             } finally {
 
                 setState { copy(isLoading = false) }
+            }
+        }
+    }
+
+    fun onEvent(event: UiEvent) {
+        when (event) {
+            is UiEvent.UpdateSearchTerm -> {
+                setState { copy(searchTerm = event.newTerm) }
             }
         }
     }

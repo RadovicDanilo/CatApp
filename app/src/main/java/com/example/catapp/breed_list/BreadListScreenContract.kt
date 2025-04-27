@@ -5,16 +5,14 @@ import com.example.catapp.users.list.model.SimpleBreadUiModel
 interface BreadListScreenContract {
 
     data class UiState(
+        val searchTerm: String = "",
         val breads: List<SimpleBreadUiModel> = emptyList(),
         val isLoading: Boolean = true,
         val error: Throwable? = null
     )
 
     sealed class UiEvent {
-        data object RefreshData : UiEvent()
-    }
-
-    sealed class SideEffect {
+        data class UpdateSearchTerm(val newTerm: String) : UiEvent()
     }
 
 }
