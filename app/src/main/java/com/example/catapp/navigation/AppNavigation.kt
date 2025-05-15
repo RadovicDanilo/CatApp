@@ -15,6 +15,8 @@ import com.example.catapp.breed_details.BreadDetailScreen
 import com.example.catapp.breed_details.BreadDetailsViewModel
 import com.example.catapp.breed_list.BreadListScreen
 import com.example.catapp.breed_list.BreadListViewModel
+import com.example.catapp.register.RegisterScreen
+import com.example.catapp.register.RegisterViewModel
 
 private fun NavController.navigateToDetails(id: String) {
     this.navigate(route = "details/$id")
@@ -25,8 +27,15 @@ fun AppNavigation() {
     val navController = rememberNavController()
 
     NavHost(
-        navController = navController, startDestination = "list"
+        navController = navController, startDestination = "register"
     ) {
+
+        composable(route = "register") {
+            RegisterScreen(
+                viewModel = hiltViewModel<RegisterViewModel>(),
+            )
+        }
+
         composable(route = "list") {
             BreadListScreen(viewModel = hiltViewModel<BreadListViewModel>(), onBreadClick = { id ->
                 navController.navigateToDetails(id = id)
