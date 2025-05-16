@@ -1,7 +1,7 @@
 package com.example.catapp.breed_details
 
-import com.example.catapp.users.api.model.ImageApiModel
-import com.example.catapp.users.list.model.DetailedBreadUiModel
+import com.example.catapp.apitempasas.api.model.ImageApiModel
+import com.example.catapp.apitempasas.list.model.DetailedBreadUiModel
 
 interface BreadDetailsScreenContract {
 

@@ -1,4 +1,4 @@
-package com.example.catapp.users.api.model
+package com.example.catapp.apitempasas.api.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

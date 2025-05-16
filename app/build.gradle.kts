@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.jetpack.room)
 }
 
 val catApiKey: String = project.findProperty("catApiKey") as? String ?: ""
@@ -54,6 +55,10 @@ android {
     hilt {
         enableAggregatingTask = true
     }
+
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
 }
 
 dependencies {
@@ -96,6 +101,16 @@ dependencies {
     // Coil
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    annotationProcessor(libs.room.compiler)
+    ksp(libs.room.compiler)
+
+    // DataStore
+    implementation(libs.datastore)
+    implementation(libs.datastore.preferences)
 
     // Tests
     testImplementation(libs.junit)

@@ -23,11 +23,11 @@ private fun NavController.navigateToDetails(id: String) {
 }
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(startDestination: String) {
     val navController = rememberNavController()
 
     NavHost(
-        navController = navController, startDestination = "register"
+        navController = navController, startDestination = startDestination
     ) {
 
         composable(route = "register") {

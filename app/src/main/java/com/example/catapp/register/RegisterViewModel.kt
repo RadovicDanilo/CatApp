@@ -1,6 +1,10 @@
 package com.example.catapp.register
 
+import android.util.Log
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
+import com.example.catapp.account.UserAccount
+import com.example.catapp.account.UserAccountStore
 import com.example.catapp.register.RegisterScreenContract.UiEvent
 import com.example.catapp.register.RegisterScreenContract.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,7 +14,9 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class RegisterViewModel @Inject constructor() : ViewModel() {
+class RegisterViewModel @Inject constructor(
+    private val userAccountStore: UserAccountStore,
+) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
     val state = _state.asStateFlow()
@@ -25,7 +31,9 @@ class RegisterViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun submit() {
+    suspend fun submit() {
+        Log.d("USER_ACC", "TRYING TO CREATE")
+
         val current = state.value
 
         setState { copy(error = null) }
@@ -45,7 +53,12 @@ class RegisterViewModel @Inject constructor() : ViewModel() {
             return
         }
 
-        //TODO save to db/ds
+        val userAccount =
+            UserAccount(current.firstName, current.lastName, current.nickname, current.email)
+        userAccountStore.replaceUserAccount(userAccount)
+
+        Log.d("USER_ACC", "CREATED")
+        Log.d("USER_ACC", userAccountStore.userAccount.toString())
 
     }
 
@@ -55,6 +68,6 @@ class RegisterViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun isEmailValid(email: String): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 }

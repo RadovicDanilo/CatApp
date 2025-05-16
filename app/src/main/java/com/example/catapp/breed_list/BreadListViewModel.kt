@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.catapp.breed_list.BreadListScreenContract.UiEvent
 import com.example.catapp.breed_list.BreadListScreenContract.UiState
-import com.example.catapp.users.list.model.SimpleBreadUiModel
-import com.example.catapp.users.repository.BreadRepository
+import com.example.catapp.apitempasas.list.model.SimpleBreadUiModel
+import com.example.catapp.apitempasas.repository.BreadRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

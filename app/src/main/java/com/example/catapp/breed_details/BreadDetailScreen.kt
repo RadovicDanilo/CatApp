@@ -41,8 +41,8 @@ import coil3.compose.SubcomposeAsyncImage
 import com.example.catapp.core.compose.LoadingIndicator
 import com.example.catapp.core.compose.NoDataContent
 import com.example.catapp.core.compose.PasswordAppTopBar
-import com.example.catapp.users.api.model.ImageApiModel
-import com.example.catapp.users.list.model.DetailedBreadUiModel
+import com.example.catapp.apitempasas.api.model.ImageApiModel
+import com.example.catapp.apitempasas.list.model.DetailedBreadUiModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -1,6 +1,6 @@
-package com.example.catapp.users.di
+package com.example.catapp.apitempasas.di
 
-import com.example.catapp.users.api.CatApi
+import com.example.catapp.apitempasas.api.CatApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -1,6 +1,6 @@
 package com.example.catapp.breed_list
 
-import com.example.catapp.users.list.model.SimpleBreadUiModel
+import com.example.catapp.apitempasas.list.model.SimpleBreadUiModel
 
 interface BreadListScreenContract {
 

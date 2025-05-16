@@ -1,6 +1,6 @@
-package com.example.catapp.users.list.model
+package com.example.catapp.apitempasas.list.model
 
-import com.example.catapp.users.api.model.BreadApiModel
+import com.example.catapp.apitempasas.api.model.BreadApiModel
 
 data class DetailedBreadUiModel(
     val id: String,

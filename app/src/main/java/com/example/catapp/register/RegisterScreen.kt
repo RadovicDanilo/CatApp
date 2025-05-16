@@ -14,11 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.catapp.core.compose.PasswordAppTopBar
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,12 +57,13 @@ fun RegisterForm(
     padding: PaddingValues,
     uiState: RegisterScreenContract.UiState,
     onEvent: (RegisterScreenContract.UiEvent) -> Unit,
-    onSubmit: () -> Unit
+    onSubmit: suspend () -> Unit
 ) {
     Column(
         modifier = Modifier
             .padding(padding)
-            .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TextField(
             value = uiState.firstName,
@@ -94,8 +97,14 @@ fun RegisterForm(
                 .padding(vertical = 4.dp)
                 .fillMaxWidth()
         )
+
+        val coroutineScope = rememberCoroutineScope()
         Button(
-            onClick = onSubmit, modifier = Modifier.padding(top = 16.dp)
+            onClick = {
+                coroutineScope.launch {
+                    onSubmit()
+                }
+            }, modifier = Modifier.padding(top = 16.dp)
         ) {
             Text("Register")
         }

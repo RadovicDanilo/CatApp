@@ -1,5 +1,5 @@
 [versions]
-agp = "8.9.2"
+agp = "8.9.3"
 accompanist = "0.37.2"
 coil = "3.1.0"
 kotlin = "2.1.20"
@@ -10,16 +10,18 @@ coreSplashscreen = "1.0.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-lifecycle = "2.8.7"
+lifecycle = "2.9.0"
 activityCompose = "1.10.1"
-composeBom = "2025.04.01"
+composeBom = "2025.05.00"
 loggingInterceptor = "4.12.0"
 materialIcons = "1.7.8"
-composeNavigation = "2.8.9"
+composeNavigation = "2.9.0"
 hilt = "1.2.0"
 dagger = "2.56.1"
 okhttp = "4.12.0"
 retrofit = "2.11.0"
+room = "2.7.1"
+jetpack-datastore = "1.1.6"
 
 [libraries]
 
@@ -68,6 +70,15 @@ okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.
 retrofit2 = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version = "1.0.0" }
 
+# Room
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+
+# Data storage libs
+datastore = { module = "androidx.datastore:datastore", version.ref = "jetpack-datastore" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "jetpack-datastore" }
+
 # Tests
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -86,3 +97,4 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+jetpack-room = { id = "androidx.room", version.ref = "room" }
