@@ -1,12 +1,12 @@
-package com.example.catapp.breed_details
+package com.example.catapp.breed_gallery
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.catapp.navigation.breadIdOrThrow
-import com.example.catapp.apitempasas.list.model.DetailedBreadUiModel
+import com.example.catapp.apitempasas.api.model.ImageApiModel
 import com.example.catapp.apitempasas.repository.BreadRepository
-import com.example.catapp.breed_details.BreadDetailsScreenContract.UiState
+import com.example.catapp.breed_gallery.BreadGalleryScreenContract.UiState
+import com.example.catapp.navigation.breadIdOrThrow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BreadDetailsViewModel @Inject constructor(
+class BreadGalleryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle, private val repository: BreadRepository
 ) : ViewModel() {
 
@@ -32,9 +32,13 @@ class BreadDetailsViewModel @Inject constructor(
     private fun fetchData() {
         viewModelScope.launch {
             try {
-                val details = DetailedBreadUiModel(repository.fetchBread(breadId))
-                val image = repository.getImageById(details.imageId)
-                setState { copy(details = details, imageApiModel = image) }
+                val pageCount = 3
+                val images = mutableListOf<ImageApiModel>()
+                for (page in 0 until pageCount) {
+                    val resp = repository.searchPicturesById(breadId, page = page)
+                    images.addAll(resp)
+                }
+                setState { copy(images = images) }
 
             } catch (error: Exception) {
                 setState { copy(error = error) }

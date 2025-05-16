@@ -22,9 +22,13 @@ class BreadRepository @Inject constructor(
         }
     }
 
-    suspend fun searchPicturesById(breadId: String): List<ImageApiModel> {
+    suspend fun searchPicturesById(
+        breadId: String, limit: Int = 10, page: Int = 0, order: String = "DESC"
+    ): List<ImageApiModel> {
         return withContext(Dispatchers.IO) {
-            catApi.searchImagesByBreed(breadId)
+            catApi.searchImagesByBreed(
+                breadId, limit, page, order
+            )
         }
     }
 

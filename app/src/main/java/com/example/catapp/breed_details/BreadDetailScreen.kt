@@ -38,16 +38,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
+import com.example.catapp.apitempasas.api.model.ImageApiModel
+import com.example.catapp.apitempasas.list.model.DetailedBreadUiModel
 import com.example.catapp.core.compose.LoadingIndicator
 import com.example.catapp.core.compose.NoDataContent
 import com.example.catapp.core.compose.PasswordAppTopBar
-import com.example.catapp.apitempasas.api.model.ImageApiModel
-import com.example.catapp.apitempasas.list.model.DetailedBreadUiModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BreadDetailScreen(
-    viewModel: BreadDetailsViewModel, onClose: () -> Unit
+    viewModel: BreadDetailsViewModel, onClose: () -> Unit, navigateToGallery: (String) -> Unit
 ) {
     val uiState = viewModel.state.collectAsState()
     Scaffold(topBar = {
@@ -66,7 +66,11 @@ fun BreadDetailScreen(
             LoadingIndicator()
         } else {
             BreadDetails(
-                uiState.value.details!!, uiState.value.imageApiModel!!, padding
+                uiState.value.details!!,
+                uiState.value.imageApiModel!!,
+                padding,
+                navigateToGallery,
+                viewModel.breadId,
             )
         }
     }
@@ -74,7 +78,13 @@ fun BreadDetailScreen(
 }
 
 @Composable
-fun BreadDetails(data: DetailedBreadUiModel, image: ImageApiModel, padding: PaddingValues) {
+fun BreadDetails(
+    data: DetailedBreadUiModel,
+    image: ImageApiModel,
+    padding: PaddingValues,
+    navigateToGallery: (String) -> Unit,
+    breadId: String
+) {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
@@ -100,6 +110,9 @@ fun BreadDetails(data: DetailedBreadUiModel, image: ImageApiModel, padding: Padd
         }
 
         BreadPicture(image.url.toString())
+        Button(onClick = {
+            navigateToGallery(breadId)
+        }) { Text("Gallery") }
 
         Text(
             text = data.description,
