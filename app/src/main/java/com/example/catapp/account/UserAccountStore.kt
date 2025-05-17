@@ -28,6 +28,7 @@ class UserAccountStore @Inject constructor(
         }
     }
 
+    @Suppress("unused")
     suspend fun clearUserAccount() {
         persistence.updateData { null }
     }

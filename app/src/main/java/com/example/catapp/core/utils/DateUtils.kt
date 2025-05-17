@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.example.catapp.core.utils
 
 import android.os.Build
