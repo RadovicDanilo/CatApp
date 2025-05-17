@@ -1,12 +1,14 @@
 package com.example.catapp.breed_list
 
-import com.example.catapp.apitempasas.list.model.SimpleBreadUiModel
+import com.example.catapp.apitempasas.list.model.BreedEntity
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
-interface BreadListScreenContract {
+interface BreedListScreenContract {
 
     data class UiState(
         val searchTerm: String = "",
-        val breads: List<SimpleBreadUiModel> = emptyList(),
+        val breeds: Flow<List<BreedEntity>> = flow { emit(emptyList()) },
         val isLoading: Boolean = true,
         val error: Throwable? = null
     )

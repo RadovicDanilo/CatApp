@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class BreadApiModel(
+data class BreedApiModel(
     val weight: Weight? = null,
     val id: String? = null,
     val name: String? = null,

@@ -1,6 +1,6 @@
 package com.example.catapp.apitempasas.api
 
-import com.example.catapp.apitempasas.api.model.BreadApiModel
+import com.example.catapp.apitempasas.api.model.BreedApiModel
 import com.example.catapp.apitempasas.api.model.ImageApiModel
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -9,12 +9,12 @@ import retrofit2.http.Query
 interface CatApi {
 
     @GET("/v1/breeds")
-    suspend fun getAllBreads(): List<BreadApiModel>
+    suspend fun getAllBreeds(): List<BreedApiModel>
 
     @GET("/v1/breeds/{id}")
-    suspend fun getBread(
-        @Path("id") breadId: String,
-    ): BreadApiModel
+    suspend fun getBreed(
+        @Path("id") breedId: String,
+    ): BreedApiModel
 
     @GET("/v1/images/{image_id}")
     suspend fun getImageById(

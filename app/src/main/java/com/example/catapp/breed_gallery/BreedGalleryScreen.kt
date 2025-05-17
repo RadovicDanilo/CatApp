@@ -19,23 +19,30 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.SubcomposeAsyncImage
-import com.example.catapp.apitempasas.api.model.ImageApiModel
+import com.example.catapp.apitempasas.list.model.ImageEntity
 import com.example.catapp.core.compose.NoDataContent
 import com.example.catapp.core.compose.PasswordAppTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BreadGalleryScreen(
-    viewModel: BreadGalleryViewModel, onClose: () -> Unit, navigateToGallery: (String) -> Unit
+fun BreedGalleryScreen(
+    viewModel: BreedGalleryViewModel, onClose: () -> Unit
 ) {
-    val uiState = viewModel.state.collectAsState()
+    val uiState by viewModel.state.collectAsState()
+    val images by uiState.images.collectAsState(initial = emptyList())
+
     Scaffold(topBar = {
         PasswordAppTopBar(
             modifier = Modifier.padding(8.dp),
@@ -44,14 +51,14 @@ fun BreadGalleryScreen(
             navigationOnClick = onClose,
         )
     }) { padding ->
-        if (uiState.value.error != null) {
+        if (uiState.error != null) {
             NoDataContent(
-                text = "Error = ${uiState.value.error!!.message}"
+                text = "Error = ${uiState.error!!.message}"
             )
 
         } else {
-            BreadGallery(
-                uiState.value.images,
+            BreedGallery(
+                images!!,
                 padding,
             )
         }
@@ -60,15 +67,12 @@ fun BreadGalleryScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BreadGallery(images: List<ImageApiModel>, padding: PaddingValues) {
+fun BreedGallery(images: List<ImageEntity>, padding: PaddingValues) {
     var selectedIndex by remember { mutableStateOf<Int?>(null) }
 
     if (selectedIndex != null) {
         FullscreenImagePager(
-            images = images,
-            startIndex = selectedIndex!!,
-            onDismiss = { selectedIndex = null }
-        )
+            images = images, startIndex = selectedIndex!!, onDismiss = { selectedIndex = null })
     }
 
     LazyVerticalGrid(
@@ -95,20 +99,14 @@ fun BreadGallery(images: List<ImageApiModel>, padding: PaddingValues) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FullscreenImagePager(
-    images: List<ImageApiModel>,
-    startIndex: Int,
-    onDismiss: () -> Unit
+    images: List<ImageEntity>, startIndex: Int, onDismiss: () -> Unit
 ) {
     val pagerState = rememberPagerState(
-        initialPage = startIndex,
-        pageCount = { images.size }
-    )
+        initialPage = startIndex, pageCount = { images.size })
 
     Dialog(onDismissRequest = { onDismiss() }) {
         Surface(
-            modifier = Modifier
-                .fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
+            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             Box {
                 HorizontalPager(

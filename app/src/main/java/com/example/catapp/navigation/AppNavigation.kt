@@ -11,12 +11,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.catapp.breed_details.BreadDetailScreen
-import com.example.catapp.breed_details.BreadDetailsViewModel
-import com.example.catapp.breed_gallery.BreadGalleryScreen
-import com.example.catapp.breed_gallery.BreadGalleryViewModel
-import com.example.catapp.breed_list.BreadListScreen
-import com.example.catapp.breed_list.BreadListViewModel
+import com.example.catapp.breed_details.BreedDetailScreen
+import com.example.catapp.breed_details.BreedDetailsViewModel
+import com.example.catapp.breed_gallery.BreedGalleryScreen
+import com.example.catapp.breed_gallery.BreedGalleryViewModel
+import com.example.catapp.breed_list.BreedListScreen
+import com.example.catapp.breed_list.BreedListViewModel
 import com.example.catapp.register.RegisterScreen
 import com.example.catapp.register.RegisterViewModel
 
@@ -43,25 +43,23 @@ fun AppNavigation(startDestination: String) {
         }
 
         composable(route = "list") {
-            BreadListScreen(viewModel = hiltViewModel<BreadListViewModel>(), onBreadClick = { id ->
+            BreedListScreen(viewModel = hiltViewModel<BreedListViewModel>(), onBreedClick = { id ->
                 navController.navigateToDetails(id = id)
             })
         }
 
-        breadDetails(
-            route = "details/{$BREAD_ID_ARG}",
+        breedDetails(
             arguments = listOf(
-                navArgument(name = BREAD_ID_ARG) {
+                navArgument(name = Breed_ID_ARG) {
                     type = NavType.StringType
                     nullable = false
                 }),
             navController = navController,
         )
 
-        breadGallery(
-            route = "gallery/{$BREAD_ID_ARG}",
+        breedGallery(
             arguments = listOf(
-                navArgument(name = BREAD_ID_ARG) {
+                navArgument(name = Breed_ID_ARG) {
                     type = NavType.StringType
                     nullable = false
                 }),
@@ -70,33 +68,29 @@ fun AppNavigation(startDestination: String) {
     }
 }
 
-private fun NavGraphBuilder.breadGallery(
-    route: String,
+private fun NavGraphBuilder.breedGallery(
     arguments: List<NamedNavArgument>,
     navController: NavController,
-) = composable(route = route, arguments = arguments) { navBackStackEntry ->
-    val viewModel = hiltViewModel<BreadGalleryViewModel>()
-    BreadGalleryScreen(viewModel = viewModel, onClose = {
+) = composable(route = "gallery/{$Breed_ID_ARG}", arguments = arguments) { navBackStackEntry ->
+    val viewModel = hiltViewModel<BreedGalleryViewModel>()
+    BreedGalleryScreen(viewModel = viewModel, onClose = {
+        navController.navigateUp()
+    })
+}
+
+private fun NavGraphBuilder.breedDetails(
+    arguments: List<NamedNavArgument>,
+    navController: NavController,
+) = composable(route = "details/{$Breed_ID_ARG}", arguments = arguments) { navBackStackEntry ->
+    val viewModel = hiltViewModel<BreedDetailsViewModel>()
+    BreedDetailScreen(viewModel = viewModel, onClose = {
         navController.navigateUp()
     }, navigateToGallery = { id ->
         navController.navigateToGallery(id)
     })
 }
 
-private fun NavGraphBuilder.breadDetails(
-    route: String,
-    arguments: List<NamedNavArgument>,
-    navController: NavController,
-) = composable(route = route, arguments = arguments) { navBackStackEntry ->
-    val viewModel = hiltViewModel<BreadDetailsViewModel>()
-    BreadDetailScreen(viewModel = viewModel, onClose = {
-        navController.navigateUp()
-    }, navigateToGallery = { id ->
-        navController.navigateToGallery(id)
-    })
-}
+const val Breed_ID_ARG = "BreedId"
 
-const val BREAD_ID_ARG = "breadId"
-
-val SavedStateHandle.breadIdOrThrow: String
-    get() = this.get<String>(BREAD_ID_ARG) ?: error("$BREAD_ID_ARG not found.")
+val SavedStateHandle.BreedIdOrThrow: String
+    get() = this.get<String>(Breed_ID_ARG) ?: error("$Breed_ID_ARG not found.")

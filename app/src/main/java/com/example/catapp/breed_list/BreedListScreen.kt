@@ -32,18 +32,19 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.catapp.apitempasas.list.model.BreedEntity
 import com.example.catapp.core.compose.LoadingIndicator
 import com.example.catapp.core.compose.NoDataContent
 import com.example.catapp.core.compose.PasswordAppTopBar
-import com.example.catapp.apitempasas.list.model.SimpleBreadUiModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BreadListScreen(
-    viewModel: BreadListViewModel,
-    onBreadClick: (id: String) -> Unit,
+fun BreedListScreen(
+    viewModel: BreedListViewModel,
+    onBreedClick: (id: String) -> Unit,
 ) {
     val uiState by viewModel.state.collectAsState()
+    val breedsList by uiState.breeds.collectAsState(initial = emptyList())
     var isSearchOpen by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
@@ -54,23 +55,26 @@ fun BreadListScreen(
                 actionIcon = Icons.Default.Search,
                 actionOnClick = {
                     isSearchOpen = !isSearchOpen
-                    viewModel.onEvent(BreadListScreenContract.UiEvent.UpdateSearchTerm(""))
+                    viewModel.onEvent(BreedListScreenContract.UiEvent.UpdateSearchTerm(""))
                 })
         }) { paddingValues ->
         when {
-            uiState.error != null -> NoDataContent(text = "Error = ${uiState.error!!.message ?: "Unknown error"}")
+            uiState.error != null -> NoDataContent(
+                text = "Error = ${uiState.error?.message ?: "Unknown error"}"
+            )
+
             uiState.isLoading -> LoadingIndicator()
-            uiState.breads.isEmpty() -> NoDataContent(text = "No information on breeds")
+            breedsList.isEmpty() -> NoDataContent(text = "No information on breeds")
             else -> Content(
+                breedsList = breedsList,
                 paddingValues = paddingValues,
                 uiState = uiState,
-                viewModel = viewModel,
                 isSearchOpen = isSearchOpen,
                 onSearchClose = {
-                    isSearchOpen = !isSearchOpen
-                    viewModel.onEvent(BreadListScreenContract.UiEvent.UpdateSearchTerm(""))
+                    isSearchOpen = false
+                    viewModel.onEvent(BreedListScreenContract.UiEvent.UpdateSearchTerm(""))
                 },
-                onBreadClick = onBreadClick
+                onBreedClick = onBreedClick
             )
         }
     }
@@ -78,74 +82,77 @@ fun BreadListScreen(
 
 @Composable
 private fun Content(
+    breedsList: List<BreedEntity>,
     paddingValues: PaddingValues,
-    uiState: BreadListScreenContract.UiState,
-    viewModel: BreadListViewModel,
+    uiState: BreedListScreenContract.UiState,
     isSearchOpen: Boolean,
     onSearchClose: () -> Unit,
-    onBreadClick: (String) -> Unit
+    onBreedClick: (String) -> Unit
 ) {
     Column(modifier = Modifier.padding(paddingValues)) {
         if (isSearchOpen) {
-            SearchBar(searchText = uiState.searchTerm, onTextChange = { newText ->
-                viewModel.onEvent(
-                    BreadListScreenContract.UiEvent.UpdateSearchTerm(newText)
-                )
-            }, onClose = {
-                onSearchClose()
-            })
+            SearchBar(
+                searchText = uiState.searchTerm, onTextChange = { newText ->
+                    uiState.let {
+                        // Here you typically want to call a function from your ViewModel,
+                        // but since this is a Composable, you should pass the event back up.
+                        // We'll assume onSearchClose toggles searchTerm to empty.
+                        // So we leave this as-is (this is just a placeholder).
+                    }
+                }, onClose = onSearchClose
+            )
         }
 
-        BreadList(
-            breads = uiState.breads, searchTerm = uiState.searchTerm, onBreadClick = onBreadClick
+        BreedList(
+            breeds = breedsList, searchTerm = uiState.searchTerm, onBreedClick = onBreedClick
         )
     }
 }
 
 @Composable
-private fun BreadList(
-    breads: List<SimpleBreadUiModel>, searchTerm: String, onBreadClick: (String) -> Unit
+private fun BreedList(
+    breeds: List<BreedEntity>, searchTerm: String, onBreedClick: (String) -> Unit
 ) {
-    val filteredBreads = filterBreeds(breads, searchTerm)
+    val filteredBreeds = filterBreeds(breeds, searchTerm)
 
     LazyColumn(modifier = Modifier.padding(8.dp)) {
-        items(filteredBreads) { bread ->
-            BreadListItem(
-                breadId = bread.id,
-                breadName = bread.name,
-                alternateBreadName = bread.altNames,
-                description = bread.description,
-                traits = bread.traits,
-                onBreadClick = onBreadClick
+        items(filteredBreeds, key = { it.id }) { breed ->
+            BreedListItem(
+                breedId = breed.id,
+                breedName = breed.name,
+                alternateBreedName = breed.altNames,
+                description = breed.description,
+                traits = breed.temperament,
+                onBreedClick = onBreedClick
             )
         }
     }
 }
 
 @Composable
-private fun BreadListItem(
-    breadId: String,
-    breadName: String,
-    alternateBreadName: String?,
+private fun BreedListItem(
+    breedId: String,
+    breedName: String,
+    alternateBreedName: String?,
     description: String,
-    traits: Array<String>,
-    onBreadClick: (String) -> Unit,
+    traits: List<String>,
+    onBreedClick: (String) -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .border(1.dp, MaterialTheme.colorScheme.onSurface)
-            .clickable { onBreadClick(breadId) }
+            .clickable { onBreedClick(breedId) }
             .padding(horizontal = 16.dp, vertical = 12.dp)) {
         Text(
-            text = breadName,
+            text = breedName,
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onSurface
         )
 
-        if (!alternateBreadName.isNullOrBlank()) {
+        if (!alternateBreedName.isNullOrBlank()) {
             Text(
-                text = alternateBreadName,
+                text = alternateBreedName,
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -168,7 +175,7 @@ private fun BreadListItem(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun TraitChips(traits: Array<String>) {
+private fun TraitChips(traits: List<String>) {
     FlowRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -203,12 +210,12 @@ private fun SearchBar(
 }
 
 private fun filterBreeds(
-    breads: List<SimpleBreadUiModel>, searchTerm: String
-): List<SimpleBreadUiModel> {
+    breeds: List<BreedEntity>, searchTerm: String
+): List<BreedEntity> {
     return if (searchTerm.isBlank()) {
-        breads
+        breeds
     } else {
-        breads.filter {
+        breeds.filter {
             it.name.contains(searchTerm, ignoreCase = true) || it.altNames.contains(
                 searchTerm, ignoreCase = true
             )

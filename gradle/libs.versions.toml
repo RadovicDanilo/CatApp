@@ -1,6 +1,5 @@
 [versions]
 agp = "8.9.3"
-accompanist = "0.37.2"
 coil = "3.1.0"
 kotlin = "2.1.20"
 kotlinx-serialization = "1.8.1"
@@ -50,7 +49,6 @@ coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version
 # Navigation
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
 navigation-hilt = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt" }
-navigation-material = { module = "com.google.accompanist:accompanist-navigation-material", version.ref = "accompanist" }
 
 # DI libs
 hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hilt" }

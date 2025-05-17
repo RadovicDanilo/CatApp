@@ -31,6 +31,7 @@ import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -38,18 +39,22 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
-import com.example.catapp.apitempasas.api.model.ImageApiModel
-import com.example.catapp.apitempasas.list.model.DetailedBreadUiModel
+import com.example.catapp.apitempasas.list.model.BreedEntity
+import com.example.catapp.apitempasas.list.model.ImageEntity
 import com.example.catapp.core.compose.LoadingIndicator
 import com.example.catapp.core.compose.NoDataContent
 import com.example.catapp.core.compose.PasswordAppTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BreadDetailScreen(
-    viewModel: BreadDetailsViewModel, onClose: () -> Unit, navigateToGallery: (String) -> Unit
+fun BreedDetailScreen(
+    viewModel: BreedDetailsViewModel, onClose: () -> Unit, navigateToGallery: (String) -> Unit
 ) {
-    val uiState = viewModel.state.collectAsState()
+    val uiState by viewModel.state.collectAsState()
+
+    val details by uiState.details?.collectAsState(initial = null) ?: return
+    val image by uiState.imageApiModel?.collectAsState(initial = null) ?: return
+
     Scaffold(topBar = {
         PasswordAppTopBar(
             modifier = Modifier.padding(8.dp),
@@ -58,32 +63,38 @@ fun BreadDetailScreen(
             navigationOnClick = onClose,
         )
     }) { padding ->
-        if (uiState.value.error != null) {
-            NoDataContent(
-                text = "Error = ${uiState.value.error!!.message}"
-            )
-        } else if (uiState.value.details == null || uiState.value.imageApiModel == null) {
-            LoadingIndicator()
-        } else {
-            BreadDetails(
-                uiState.value.details!!,
-                uiState.value.imageApiModel!!,
-                padding,
-                navigateToGallery,
-                viewModel.breadId,
-            )
+        when {
+            uiState.error != null -> {
+                NoDataContent(
+                    text = "Error = ${uiState.error!!.message}"
+                )
+            }
+
+            details == null || image == null -> {
+                LoadingIndicator()
+            }
+
+            else -> {
+                BreedDetails(
+                    details!!,
+                    image!!,
+                    padding,
+                    navigateToGallery,
+                    viewModel.breedId,
+                )
+            }
         }
     }
 
 }
 
 @Composable
-fun BreadDetails(
-    data: DetailedBreadUiModel,
-    image: ImageApiModel,
+fun BreedDetails(
+    data: BreedEntity,
+    image: ImageEntity,
     padding: PaddingValues,
     navigateToGallery: (String) -> Unit,
-    breadId: String
+    breedId: String
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -109,9 +120,9 @@ fun BreadDetails(
             }
         }
 
-        BreadPicture(image.url.toString())
+        BreedPicture(image.url)
         Button(onClick = {
-            navigateToGallery(breadId)
+            navigateToGallery(breedId)
         }) { Text("Gallery") }
 
         Text(
@@ -232,7 +243,7 @@ private fun Chips(traits: Array<String>) {
 }
 
 @Composable
-private fun BreadPicture(imageUrl: String) {
+private fun BreedPicture(imageUrl: String) {
     SubcomposeAsyncImage(
         modifier = Modifier.size(100.dp),
         model = imageUrl,

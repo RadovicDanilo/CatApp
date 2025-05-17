@@ -2,10 +2,9 @@ package com.example.catapp.breed_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.catapp.breed_list.BreadListScreenContract.UiEvent
-import com.example.catapp.breed_list.BreadListScreenContract.UiState
-import com.example.catapp.apitempasas.list.model.SimpleBreadUiModel
-import com.example.catapp.apitempasas.repository.BreadRepository
+import com.example.catapp.apitempasas.repository.BreedRepository
+import com.example.catapp.breed_list.BreedListScreenContract.UiEvent
+import com.example.catapp.breed_list.BreedListScreenContract.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,8 +13,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BreadListViewModel @Inject constructor(
-    private val repository: BreadRepository
+class BreedListViewModel @Inject constructor(
+    private val repository: BreedRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
@@ -30,9 +29,9 @@ class BreadListViewModel @Inject constructor(
         viewModelScope.launch {
             setState { copy(isLoading = true) }
             try {
-                val breadsList = repository.fetchAllBreads()
-                    .map { breadApiModel -> SimpleBreadUiModel(breadApiModel) }
-                setState { copy(breads = breadsList) }
+                repository.fetchAllBreeds()
+                val breedsList = repository.observeAllBreeds()
+                setState { copy(breeds = breedsList) }
             } catch (error: Exception) {
                 setState { copy(error = error) }
             } finally {
