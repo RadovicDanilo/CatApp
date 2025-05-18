@@ -11,13 +11,12 @@ import com.example.catapp.data.db.model.ImageEntity
 import com.example.catapp.data.db.model.QuizResultEntity
 
 @Database(
-    entities = [BreedEntity::class, ImageEntity::class],
-    version = 1,
+    entities = [BreedEntity::class, ImageEntity::class, QuizResultEntity::class],
+    version = 2,
 )
 @TypeConverters(
     JsonTypeConvertor::class,
     ListTypeConverter::class,
-    QuizResultEntity::class,
 )
 abstract class AppDatabase : RoomDatabase() {
 

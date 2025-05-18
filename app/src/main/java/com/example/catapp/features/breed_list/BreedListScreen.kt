@@ -32,10 +32,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.catapp.data.db.model.BreedEntity
 import com.example.catapp.core.compose.LoadingIndicator
 import com.example.catapp.core.compose.NoDataContent
 import com.example.catapp.core.compose.PasswordAppTopBar
+import com.example.catapp.data.db.model.BreedEntity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,6 +70,7 @@ fun BreedListScreen(
                 paddingValues = paddingValues,
                 uiState = uiState,
                 isSearchOpen = isSearchOpen,
+                onEvent = viewModel::onEvent,
                 onSearchClose = {
                     isSearchOpen = false
                     viewModel.onEvent(BreedListScreenContract.UiEvent.UpdateSearchTerm(""))
@@ -85,20 +86,18 @@ private fun Content(
     breedsList: List<BreedEntity>,
     paddingValues: PaddingValues,
     uiState: BreedListScreenContract.UiState,
+    onEvent: (BreedListScreenContract.UiEvent) -> Unit,
     isSearchOpen: Boolean,
     onSearchClose: () -> Unit,
-    onBreedClick: (String) -> Unit
+    onBreedClick: (String) -> Unit,
 ) {
     Column(modifier = Modifier.padding(paddingValues)) {
         if (isSearchOpen) {
             SearchBar(
                 searchText = uiState.searchTerm, onTextChange = { newText ->
-                    uiState.let {
-                        // Here you typically want to call a function from your ViewModel,
-                        // but since this is a Composable, you should pass the event back up.
-                        // We'll assume onSearchClose toggles searchTerm to empty.
-                        // So we leave this as-is (this is just a placeholder).
-                    }
+                    onEvent(
+                        BreedListScreenContract.UiEvent.UpdateSearchTerm(newText)
+                    )
                 }, onClose = onSearchClose
             )
         }

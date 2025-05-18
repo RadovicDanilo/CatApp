@@ -1,4 +1,3 @@
-// com.example.catapp.networking.di.NetworkingModule.kt
 package com.example.catapp.networking.di
 
 import com.example.catapp.di.CatApiQualifier
@@ -22,7 +21,7 @@ object NetworkingModule {
     @Provides
     @Singleton
     fun provideDefaultOkHttpClient(): OkHttpClient = OkHttpClient.Builder().addInterceptor {
-            val apiKey = ""
+            val apiKey = "live_Fsf6VdPMgKL5YMSlKo9OWrefHuCx6qCA9nLPNnnyb8vFuSvpqLCmH70kn9v62JPR"
             val updatedRequest = it.request().newBuilder().addHeader("x-api-key", apiKey).build()
             it.proceed(updatedRequest)
         }.addInterceptor(HttpLoggingInterceptor().apply {
