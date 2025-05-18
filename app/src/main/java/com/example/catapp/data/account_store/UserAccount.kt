@@ -8,4 +8,5 @@ data class UserAccount(
     val lastName: String,
     val nickname: String,
     val email: String,
+    var bestRank: Int?,
 )
