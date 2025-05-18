@@ -7,13 +7,11 @@ import com.example.catapp.features.user_info.UserInfoScreenContract.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
 class UserInfoViewModel @Inject constructor(
-    private val userAccountStore: UserAccountStore,
-    private val quizResultResultRepository: QuizResultRepository
+    userAccountStore: UserAccountStore, quizResultResultRepository: QuizResultRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -23,14 +21,5 @@ class UserInfoViewModel @Inject constructor(
         )
     )
     val state = _state.asStateFlow()
-    private fun setState(reducer: UiState.() -> UiState) = _state.update(reducer)
 
-    init {
-        setState {
-            copy(
-                results = quizResultResultRepository.observeLocalUsersResults(userAccountStore.userAccount.value!!.nickname),
-                userInfo = userAccountStore.userAccount
-            )
-        }
-    }
 }
