@@ -11,14 +11,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.catapp.breed_details.BreedDetailScreen
-import com.example.catapp.breed_details.BreedDetailsViewModel
-import com.example.catapp.breed_gallery.BreedGalleryScreen
-import com.example.catapp.breed_gallery.BreedGalleryViewModel
-import com.example.catapp.breed_list.BreedListScreen
-import com.example.catapp.breed_list.BreedListViewModel
-import com.example.catapp.register.RegisterScreen
-import com.example.catapp.register.RegisterViewModel
+import com.example.catapp.features.breed_details.BreedDetailScreen
+import com.example.catapp.features.breed_details.BreedDetailsViewModel
+import com.example.catapp.features.breed_gallery.BreedGalleryScreen
+import com.example.catapp.features.breed_gallery.BreedGalleryViewModel
+import com.example.catapp.features.breed_list.BreedListScreen
+import com.example.catapp.features.breed_list.BreedListViewModel
+import com.example.catapp.features.register.RegisterScreen
+import com.example.catapp.features.register.RegisterViewModel
 
 private fun NavController.navigateToDetails(id: String) {
     this.navigate(route = "details/$id")

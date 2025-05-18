@@ -2,7 +2,7 @@ package com.example.catapp.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.catapp.account.UserAccountStore
+import com.example.catapp.data.account_store.UserAccountStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
