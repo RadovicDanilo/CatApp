@@ -1,4 +1,4 @@
-package com.example.catapp.data.api.model
+package com.example.catapp.data.api.cat.model
 
 import kotlinx.serialization.Serializable
 

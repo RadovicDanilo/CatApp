@@ -1,7 +1,7 @@
 package com.example.catapp.data.repository
 
 import androidx.room.withTransaction
-import com.example.catapp.data.api.CatApi
+import com.example.catapp.data.api.cat.CatApi
 import com.example.catapp.data.db.model.BreedEntity
 import com.example.catapp.data.db.model.ImageEntity
 import com.example.catapp.data.db.AppDatabase

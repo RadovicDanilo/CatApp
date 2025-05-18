@@ -1,6 +1,7 @@
-package com.example.catapp.data.api.di
+package com.example.catapp.data.api.cat.di
 
-import com.example.catapp.data.api.CatApi
+import com.example.catapp.data.api.cat.CatApi
+import com.example.catapp.di.CatApiQualifier
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,5 +16,6 @@ object CatModule {
 
     @Provides
     @Singleton
-    fun provideCatApi(retrofit: Retrofit) = retrofit.create<CatApi>()
+    fun provideCatApi(@CatApiQualifier retrofit: Retrofit): CatApi =
+        retrofit.create()
 }

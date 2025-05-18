@@ -2,7 +2,7 @@ package com.example.catapp.data.db.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.catapp.data.api.model.BreedApiModel
+import com.example.catapp.data.api.cat.model.BreedApiModel
 
 @Entity(tableName = "breeds")
 data class BreedEntity(

@@ -1,7 +1,7 @@
-package com.example.catapp.data.api
+package com.example.catapp.data.api.cat
 
-import com.example.catapp.data.api.model.BreedApiModel
-import com.example.catapp.data.api.model.ImageApiModel
+import com.example.catapp.data.api.cat.model.BreedApiModel
+import com.example.catapp.data.api.cat.model.ImageApiModel
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
