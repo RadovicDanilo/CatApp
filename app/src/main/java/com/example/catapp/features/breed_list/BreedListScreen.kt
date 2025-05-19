@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Quiz
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -40,8 +41,7 @@ import com.example.catapp.data.db.model.BreedEntity
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BreedListScreen(
-    viewModel: BreedListViewModel,
-    onBreedClick: (id: String) -> Unit,
+    viewModel: BreedListViewModel, onBreedClick: (id: String) -> Unit, startQuiz: () -> Unit
 ) {
     val uiState by viewModel.state.collectAsState()
     val breedsList by uiState.breeds.collectAsState(initial = emptyList())
@@ -56,7 +56,11 @@ fun BreedListScreen(
                 actionOnClick = {
                     isSearchOpen = !isSearchOpen
                     viewModel.onEvent(BreedListScreenContract.UiEvent.UpdateSearchTerm(""))
-                })
+
+                },
+                navigationIcon = Icons.Default.Quiz,
+                navigationOnClick = startQuiz
+            )
         }) { paddingValues ->
         when {
             uiState.error != null -> NoDataContent(

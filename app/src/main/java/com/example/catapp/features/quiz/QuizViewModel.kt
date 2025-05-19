@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.catapp.data.account_store.UserAccountStore
 import com.example.catapp.data.api.leaderboard.model.LeaderboardPostRequest
+import com.example.catapp.data.db.model.QuizResultEntity
 import com.example.catapp.data.quiz.QuizGenerator
 import com.example.catapp.data.repository.QuizResultRepository
 import com.example.catapp.features.quiz.QuizScreenContract.UiState
@@ -48,7 +49,7 @@ class QuizViewModel @Inject constructor(
         }
     }
 
-    fun setAnswerAndAdvance(selectedIndex: Int) {
+    suspend fun setAnswerAndAdvance(selectedIndex: Int) {
         val currentIdx = state.value.currentQuestionIdx
         val questions = state.value.questions.toMutableList()
         questions[currentIdx].answerIndex = selectedIndex
@@ -65,13 +66,19 @@ class QuizViewModel @Inject constructor(
         }
     }
 
-    fun finish() {
+    suspend fun finish() {
         val timeLeft = state.value.remainingTime
         val correctAnswersCount =
             state.value.questions.count { it.correctOptionIndex == it.answerIndex }
         val totalScore =
             if (timeLeft == 0) 0.0 else correctAnswersCount * 2.5 * (1 + (timeLeft + 120).toDouble() / maxTime)
 
+        quizResultRepository.addLocalUsersResults(
+            QuizResultEntity(
+                nickname = userAccountStore.userAccount.value!!.nickname,
+                result = totalScore.coerceAtMost(100.0)
+            )
+        )
         setState {
             copy(
                 correctAnswerCount = correctAnswersCount,

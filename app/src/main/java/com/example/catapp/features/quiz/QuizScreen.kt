@@ -1,5 +1,6 @@
 package com.example.catapp.features.quiz
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,12 +11,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -44,18 +47,48 @@ fun QuizScreen(
 ) {
     val uiState by viewModel.state.collectAsState()
 
+    var showExitDialog by remember { mutableStateOf(false) }
+
+    BackHandler {
+        showExitDialog = true
+    }
+
     Scaffold(
         topBar = {
             PasswordAppTopBar(
                 modifier = Modifier.padding(8.dp),
                 text = "CatApp - Time: ${uiState.remainingTime}",
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-                navigationOnClick = onClose,
+                navigationOnClick = { showExitDialog = true },
             )
         }) { padding ->
+
         val questions = uiState.questions
         val questionIdx = uiState.currentQuestionIdx
 
+        if (showExitDialog) {
+            AlertDialog(
+                onDismissRequest = { showExitDialog = false },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showExitDialog = false
+                            onClose()
+                        },
+                    ) {
+                        Text("Exit")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showExitDialog = false }) {
+                        Text("Cancel")
+                    }
+                },
+                title = { Text("Exit Quiz?") },
+                text = { Text("Are you sure you want to quit the quiz?") })
+        }
+
+        val coroutineScope = rememberCoroutineScope()
         when {
             uiState.hasFinished -> FinishedScreen(
                 timeLeft = uiState.remainingTime,
@@ -73,9 +106,12 @@ fun QuizScreen(
                 questionIdx = questionIdx,
                 totalQuestions = questions.size,
                 onAnswerSelected = { selectedIdx ->
-                    viewModel.setAnswerAndAdvance(selectedIdx)
+                    coroutineScope.launch {
+                        viewModel.setAnswerAndAdvance(selectedIdx)
+                    }
                 })
         }
+
     }
 }
 
