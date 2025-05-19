@@ -44,7 +44,9 @@ class QuizViewModel @Inject constructor(
                 setState { copy(remainingTime = time) }
                 delay(1000L)
             }
-            setState { copy(hasFinished = true) }
+            setState {
+                copy(questions = questions)
+            }
             finish()
         }
     }
@@ -60,13 +62,18 @@ class QuizViewModel @Inject constructor(
             }
         } else {
             setState {
-                copy(questions = questions, hasFinished = true)
+                copy(questions = questions)
             }
             finish()
         }
     }
 
     suspend fun finish() {
+        if (state.value.hasFinished) return
+
+        setState {
+            copy(hasFinished = true)
+        }
         val timeLeft = state.value.remainingTime
         val correctAnswersCount =
             state.value.questions.count { it.correctOptionIndex == it.answerIndex }
@@ -87,6 +94,8 @@ class QuizViewModel @Inject constructor(
         }
     }
 
+    // TODO: Fix this
+    // TODO: improve visuals, use typography and proper colors everywhere
     suspend fun submitResults() {
         val nickname = userAccountStore.userAccount.value?.nickname ?: "Anonymous"
 
