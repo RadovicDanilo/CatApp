@@ -1,5 +1,8 @@
 package com.example.catapp.features.user_info
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -7,9 +10,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +26,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.catapp.core.compose.CatAppTopBar
 import com.example.catapp.data.account_store.UserAccount
@@ -63,59 +75,176 @@ fun UserInfo(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         userInfo?.let { UserAccountInfo(it, bestResult) }
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Quiz History", modifier = Modifier
-                .padding(vertical = 8.dp)
-                .fillMaxWidth()
-        )
-        UserResultsList(results)
+        Spacer(modifier = Modifier.height(8.dp))
+        ResultsList(results.sortedBy { -it.result })
     }
 }
 
 @Composable
-fun UserResultsList(results: List<QuizResultEntity>) {
-    LazyColumn(modifier = Modifier.padding(8.dp)) {
-        items(results, key = { it.id }) { result ->
-            UserResultItem(result)
+fun UserAccountInfo(userInfo: UserAccount, bestResult: Double) {
+    val roundedBestResult = "%.2f".format(bestResult)
+
+    Text(
+        text = "Account Information",
+        style = MaterialTheme.typography.headlineSmall,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(bottom = 8.dp)
+    )
+
+    HorizontalDivider(
+        thickness = 1.dp, color = MaterialTheme.colorScheme.outline
+    )
+
+    UserInfoRow(label = "First Name:", value = userInfo.firstName)
+    UserInfoRow(label = "Last Name:", value = userInfo.lastName)
+    UserInfoRow(label = "Nickname:", value = userInfo.nickname)
+    UserInfoRow(label = "Email:", value = userInfo.email)
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .padding(8.dp), horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        UserInfoRow(
+            label = "Best Rank:",
+            value = userInfo.bestRank.toString(),
+            modifier = Modifier.weight(1f)
+        )
+
+        UserInfoRow(
+            label = "Best Result:",
+            value = roundedBestResult,
+            modifier = Modifier.weight(1f),
+            valueColor = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+private fun UserInfoRow(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier,
+    valueColor: Color = MaterialTheme.colorScheme.primary
+) {
+    Row(
+        modifier = modifier
+            .padding(vertical = 6.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.SemiBold
+        )
+        Text(
+            text = " $value",
+            style = MaterialTheme.typography.bodyLarge,
+            color = valueColor,
+            fontWeight = FontWeight.SemiBold,
+        )
+    }
+}
+
+@Composable
+fun ResultsList(
+    results: List<QuizResultEntity>
+) {
+    Text(
+        text = "Quiz History",
+        modifier = Modifier
+            .padding(vertical = 8.dp)
+            .fillMaxWidth(),
+        color = MaterialTheme.colorScheme.primary,
+        style = MaterialTheme.typography.titleLarge,
+    )
+
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        itemsIndexed(results) { index, result ->
+            ResultItem(index + 1, result)
         }
     }
 }
 
 @OptIn(ExperimentalTime::class)
 @Composable
-fun UserResultItem(result: QuizResultEntity) {
+fun ResultItem(index: Int, result: QuizResultEntity) {
+    val formattedScore = "%.2f".format(result.result)
     val formatter = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
-    val createdAtDate = formatter.format(Date(result.createdAt))
+    val formattedDate = formatter.format(Date(result.createdAt))
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp)
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(8.dp)
     ) {
-        Text(
-            text = "${result.result}", modifier = Modifier
-                .weight(1f)
-                .padding(vertical = 4.dp)
-        )
-        Text(
-            text = createdAtDate, modifier = Modifier
-                .weight(2f)
-                .padding(vertical = 4.dp)
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(32.dp)
+                    .height(32.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(
+                        color = when (index) {
+                            1 -> MaterialTheme.colorScheme.primary
+                            2 -> MaterialTheme.colorScheme.secondary
+                            3 -> MaterialTheme.colorScheme.tertiary
+                            else -> MaterialTheme.colorScheme.surface
+                        }
+                    ), contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "$index",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = when (index) {
+                        1 -> MaterialTheme.colorScheme.onPrimary
+                        2 -> MaterialTheme.colorScheme.onSecondary
+                        3 -> MaterialTheme.colorScheme.onTertiary
+                        else -> MaterialTheme.colorScheme.onSurface
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = formattedDate,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                text = formattedScore,
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
     }
-}
-
-@Composable
-fun UserAccountInfo(userInfo: UserAccount, bestResult: Double) {
-    val textModifier = Modifier
-        .padding(vertical = 4.dp)
-        .fillMaxWidth()
-
-    Text(text = "First Name: ${userInfo.firstName}", modifier = textModifier)
-    Text(text = "Last Name: ${userInfo.lastName}", modifier = textModifier)
-    Text(text = "Nickname: ${userInfo.nickname}", modifier = textModifier)
-    Text(text = "Email: ${userInfo.email}", modifier = textModifier)
-    Text(text = "Best Rank: ${userInfo.bestRank}", modifier = textModifier)
-    Text(text = "Best Result: $bestResult", modifier = textModifier)
 }

@@ -33,9 +33,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.catapp.core.compose.CatAppTopBar
 import com.example.catapp.core.compose.LoadingIndicator
 import com.example.catapp.core.compose.NoDataContent
-import com.example.catapp.core.compose.CatAppTopBar
 import com.example.catapp.data.db.model.BreedEntity
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -187,7 +187,13 @@ private fun TraitChips(traits: List<String>) {
         traits.take(5).forEach { trait ->
             SuggestionChip(
                 onClick = {},
-                label = { Text(text = trait, style = MaterialTheme.typography.labelLarge) })
+                label = {
+                    Text(
+                        text = trait,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                })
         }
     }
 }

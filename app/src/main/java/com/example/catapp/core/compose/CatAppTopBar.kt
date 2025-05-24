@@ -2,6 +2,7 @@ package com.example.catapp.core.compose
 
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -30,14 +31,16 @@ fun CatAppTopBar(
             }
         },
         title = {
-            Text(text = text)
+            Text(
+                text = text,
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleLarge
+            )
         },
         actions = {
             if (actionIcon != null) {
                 AppTopBarIcon(
-                    icon = actionIcon,
-                    onClick = { actionOnClick?.invoke() }
-                )
+                    icon = actionIcon, onClick = { actionOnClick?.invoke() })
             }
         },
     )

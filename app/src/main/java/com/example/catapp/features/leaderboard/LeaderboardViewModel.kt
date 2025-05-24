@@ -22,10 +22,11 @@ class LeaderboardViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            setState { copy(loading = true) }
             val results = quizResultResultRepository.fetchLeaderboard()
             setState {
                 copy(
-                    results = results
+                    results = results, loading = false
                 )
             }
         }
