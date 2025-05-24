@@ -33,7 +33,7 @@ import androidx.compose.ui.window.Dialog
 import coil3.compose.SubcomposeAsyncImage
 import com.example.catapp.data.db.model.ImageEntity
 import com.example.catapp.core.compose.NoDataContent
-import com.example.catapp.core.compose.PasswordAppTopBar
+import com.example.catapp.core.compose.CatAppTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +44,7 @@ fun BreedGalleryScreen(
     val images by uiState.images.collectAsState(initial = emptyList())
 
     Scaffold(topBar = {
-        PasswordAppTopBar(
+        CatAppTopBar(
             modifier = Modifier.padding(8.dp),
             text = "CatApp",
             navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,

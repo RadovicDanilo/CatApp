@@ -35,7 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.catapp.core.compose.LoadingIndicator
 import com.example.catapp.core.compose.NoDataContent
-import com.example.catapp.core.compose.PasswordAppTopBar
+import com.example.catapp.core.compose.CatAppTopBar
 import com.example.catapp.data.db.model.BreedEntity
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +49,7 @@ fun BreedListScreen(
 
     Scaffold(
         topBar = {
-            PasswordAppTopBar(
+            CatAppTopBar(
                 modifier = Modifier.padding(8.dp),
                 text = "CatApp",
                 actionIcon = Icons.Default.Search,

@@ -1,7 +1,5 @@
 package com.example.catapp.networking.di
 
-import com.example.catapp.di.CatApiQualifier
-import com.example.catapp.di.LeaderboardApiQualifier
 import com.example.catapp.networking.serialization.NetworkingJson
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module

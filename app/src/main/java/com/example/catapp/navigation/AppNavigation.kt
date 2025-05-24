@@ -135,7 +135,6 @@ fun BottomNavigationBar(navController: NavController) {
     }
 }
 
-
 private fun NavGraphBuilder.breedGallery(
     arguments: List<NamedNavArgument>,
     navController: NavController,

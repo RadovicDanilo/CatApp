@@ -43,7 +43,7 @@ import com.example.catapp.data.db.model.BreedEntity
 import com.example.catapp.data.db.model.ImageEntity
 import com.example.catapp.core.compose.LoadingIndicator
 import com.example.catapp.core.compose.NoDataContent
-import com.example.catapp.core.compose.PasswordAppTopBar
+import com.example.catapp.core.compose.CatAppTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,7 +56,7 @@ fun BreedDetailScreen(
     val image by uiState.imageApiModel?.collectAsState(initial = null) ?: return
 
     Scaffold(topBar = {
-        PasswordAppTopBar(
+        CatAppTopBar(
             modifier = Modifier.padding(8.dp),
             text = "CatApp",
             navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,

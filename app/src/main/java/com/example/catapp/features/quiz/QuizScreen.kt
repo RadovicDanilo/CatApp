@@ -34,7 +34,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.example.catapp.core.compose.LoadingIndicator
-import com.example.catapp.core.compose.PasswordAppTopBar
+import com.example.catapp.core.compose.CatAppTopBar
 import com.example.catapp.data.quiz.model.QuestionType
 import com.example.catapp.data.quiz.model.QuizQuestion
 import kotlinx.coroutines.launch
@@ -55,7 +55,7 @@ fun QuizScreen(
 
     Scaffold(
         topBar = {
-            PasswordAppTopBar(
+            CatAppTopBar(
                 modifier = Modifier.padding(8.dp),
                 text = "CatApp - Time: ${uiState.remainingTime}",
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,

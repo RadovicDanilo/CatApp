@@ -2,8 +2,8 @@ package com.example.catapp.data.quiz
 
 import com.example.catapp.data.db.model.BreedEntity
 import com.example.catapp.data.db.model.ImageEntity
-import com.example.catapp.data.quiz.model.QuizQuestion
 import com.example.catapp.data.quiz.model.QuestionType
+import com.example.catapp.data.quiz.model.QuizQuestion
 import com.example.catapp.data.repository.BreedRepository
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
@@ -12,46 +12,42 @@ import kotlin.random.Random
 class QuizGenerator @Inject constructor(
     private val breedRepository: BreedRepository,
 ) {
-    private var breeds: List<BreedEntity> = emptyList()
+    private lateinit var breeds: List<BreedEntity>
     private lateinit var breedMap: Map<String, BreedEntity>
-    private var allTemperaments: List<String> = emptyList()
-    private var allImages: List<ImageEntity> = emptyList()
+    private lateinit var allTemperaments: List<String>
+    private lateinit var allImages: List<ImageEntity>
 
     suspend fun generateQuiz(): List<QuizQuestion> {
-        loadInitialData()
-        ensureMinimumImagesAvailable()
-
-        return allImages.take(MAX_QUESTIONS).map { image -> createQuestionForImage(image) }
+        fetchValidDataIfNeeded()
+        return allImages.shuffled().take(QUESTION_COUNT)
+            .map { image -> createQuestionForImage(image) }
     }
 
-    private suspend fun loadInitialData() {
+    private suspend fun fetchValidDataIfNeeded() {
+        loadFromDatabase()
+
+        if (allImages.size < QUESTION_COUNT) {
+            fetchFromNetworkAndReload()
+        }
+    }
+
+    private suspend fun loadFromDatabase() {
         breeds = breedRepository.observeAllBreeds().first()
         breedMap = breeds.associateBy { it.id }
         allTemperaments = breeds.flatMap { it.temperament }.distinct()
-        allImages = loadAllImages().shuffled()
+        allImages =
+            breeds.flatMap { breed -> breedRepository.observeImagesForBreed(breed.id).first() }
+                .shuffled()
     }
 
-    private suspend fun loadAllImages(): List<ImageEntity> {
-        return breeds.flatMap { breed ->
-            breedRepository.observeImagesForBreed(breed.id).first()
-        }
-    }
-
-    private suspend fun ensureMinimumImagesAvailable() {
-        if (allImages.size < MIN_IMAGES_REQUIRED) {
-            refreshData()
-        }
-    }
-
-    private suspend fun refreshData() {
+    private suspend fun fetchFromNetworkAndReload() {
         breedRepository.fetchAllBreeds()
-        loadInitialData()
 
-        for (breed in breeds) {
+        for (breed in breedRepository.observeAllBreeds().first()) {
             breedRepository.fetchImagesForBreed(breed.id)
-            loadInitialData()
+            loadFromDatabase()
 
-            if (allImages.size >= MIN_IMAGES_REQUIRED) break
+            if (allImages.size >= QUESTION_COUNT) break
         }
     }
 
@@ -65,9 +61,7 @@ class QuizGenerator @Inject constructor(
         }
     }
 
-    private fun createGuessTheBreedQuestion(
-        image: ImageEntity, breed: BreedEntity
-    ): QuizQuestion {
+    private fun createGuessTheBreedQuestion(image: ImageEntity, breed: BreedEntity): QuizQuestion {
         val wrongOptions = breeds.filter { it.id != breed.id }.shuffled().map { it.name }.distinct()
             .take(WRONG_OPTIONS_COUNT)
 
@@ -86,7 +80,6 @@ class QuizGenerator @Inject constructor(
     ): QuizQuestion {
         val wrongOptions = correctTemperaments.shuffled().take(WRONG_OPTIONS_COUNT)
         val oddOut = allTemperaments.filterNot { it in correctTemperaments }.shuffled().first()
-
         val options = (wrongOptions + oddOut).shuffled()
 
         return QuizQuestion.create(
@@ -98,8 +91,7 @@ class QuizGenerator @Inject constructor(
     }
 
     companion object {
-        private const val MAX_QUESTIONS = 20
-        private const val MIN_IMAGES_REQUIRED = 20
+        private const val QUESTION_COUNT = 20
         private const val WRONG_OPTIONS_COUNT = 3
     }
 }

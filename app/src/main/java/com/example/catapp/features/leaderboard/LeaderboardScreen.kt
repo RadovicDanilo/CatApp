@@ -14,7 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.catapp.core.compose.PasswordAppTopBar
+import com.example.catapp.core.compose.CatAppTopBar
 import com.example.catapp.data.api.leaderboard.model.QuizResultApiModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -30,7 +30,7 @@ fun LeaderboardScreen(
 
     Scaffold(
         topBar = {
-            PasswordAppTopBar(
+            CatAppTopBar(
                 modifier = Modifier.padding(8.dp),
                 text = "CatApp",
             )

@@ -1,7 +1,7 @@
 package com.example.catapp.data.api.cat.di
 
 import com.example.catapp.data.api.cat.CatApi
-import com.example.catapp.di.CatApiQualifier
+import com.example.catapp.networking.di.CatApiQualifier
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

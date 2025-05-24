@@ -1,7 +1,7 @@
 package com.example.catapp.data.api.leaderboard.di
 
 import com.example.catapp.data.api.leaderboard.LeaderBoardApi
-import com.example.catapp.di.LeaderboardApiQualifier
+import com.example.catapp.networking.di.LeaderboardApiQualifier
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

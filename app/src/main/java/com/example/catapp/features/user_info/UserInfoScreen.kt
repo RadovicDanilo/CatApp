@@ -18,7 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.catapp.core.compose.PasswordAppTopBar
+import com.example.catapp.core.compose.CatAppTopBar
 import com.example.catapp.data.account_store.UserAccount
 import com.example.catapp.data.db.model.QuizResultEntity
 import java.text.SimpleDateFormat
@@ -35,7 +35,7 @@ fun UserInfoScreen(
 
     Scaffold(
         topBar = {
-            PasswordAppTopBar(
+            CatAppTopBar(
                 modifier = Modifier.padding(8.dp),
                 text = "CatApp",
             )

@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 @ExperimentalMaterial3Api
 @Composable
-fun PasswordAppTopBar(
+fun CatAppTopBar(
     modifier: Modifier = Modifier,
     text: String,
     navigationIcon: ImageVector? = null,

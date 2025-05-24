@@ -1,4 +1,4 @@
-package com.example.catapp.di
+package com.example.catapp.networking.di
 
 import javax.inject.Qualifier
 
