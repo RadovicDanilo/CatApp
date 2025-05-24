@@ -62,7 +62,13 @@ fun AppNavigation(startDestination: String) {
         innerPadding
         NavHost(navController = navController, startDestination = startDestination) {
             composable("register") {
-                RegisterScreen(viewModel = hiltViewModel<RegisterViewModel>())
+                RegisterScreen(
+                    viewModel = hiltViewModel<RegisterViewModel>(), onRegisterSuccess = {
+                        navController.navigate("list") {
+                            popUpTo("register") { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    })
             }
 
             composable(BottomNavItem.BreedList.route) {

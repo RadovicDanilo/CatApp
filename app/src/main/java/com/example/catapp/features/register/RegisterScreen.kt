@@ -25,7 +25,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
-    viewModel: RegisterViewModel
+    viewModel: RegisterViewModel,
+    onRegisterSuccess: () -> Unit
 ) {
     val uiState by viewModel.state.collectAsState()
     val context = LocalContext.current
@@ -47,7 +48,12 @@ fun RegisterScreen(
             padding = padding,
             uiState = uiState,
             onEvent = viewModel::onEvent,
-            onSubmit = viewModel::submit
+            onSubmit = {
+                viewModel.submit()
+                if (viewModel.state.value.error == null) {
+                    onRegisterSuccess()
+                }
+            }
         )
     }
 }

@@ -150,7 +150,7 @@ private fun BreedListItem(
         Text(
             text = breedName,
             style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.primary
         )
 
         if (!alternateBreedName.isNullOrBlank()) {
