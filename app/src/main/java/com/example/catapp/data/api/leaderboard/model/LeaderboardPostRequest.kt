@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LeaderboardPostRequest(
     val nickname: String,
-    val result: Double,
-    val category: Int = 1
+    val result: Float,
+    val category: Int,
 )

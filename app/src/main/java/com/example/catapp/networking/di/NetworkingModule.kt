@@ -18,29 +18,59 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkingModule {
 
+    private const val CAT_API_KEY =
+        "live_Fsf6VdPMgKL5YMSlKo9OWrefHuCx6qCA9nLPNnnyb8vFuSvpqLCmH70kn9v62JPR"
+
     @Provides
     @Singleton
-    fun provideDefaultOkHttpClient(): OkHttpClient = OkHttpClient.Builder().addInterceptor {
-            val apiKey = "live_Fsf6VdPMgKL5YMSlKo9OWrefHuCx6qCA9nLPNnnyb8vFuSvpqLCmH70kn9v62JPR"
-            val updatedRequest = it.request().newBuilder().addHeader("x-api-key", apiKey).build()
-            it.proceed(updatedRequest)
-        }.addInterceptor(HttpLoggingInterceptor().apply {
+    fun provideLoggingInterceptor(): HttpLoggingInterceptor =
+        HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
-        }).build()
+        }
 
     @Provides
     @Singleton
     @CatApiQualifier
-    fun provideCatRetrofit(okHttpClient: OkHttpClient): Retrofit =
-        Retrofit.Builder().baseUrl("https://api.thecatapi.com/").client(okHttpClient)
-            .addConverterFactory(NetworkingJson.asConverterFactory("application/json".toMediaType()))
-            .build()
+    fun provideCatOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor
+    ): OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor { chain ->
+            val request = chain.request().newBuilder()
+                .addHeader("x-api-key", CAT_API_KEY)
+                .build()
+            chain.proceed(request)
+        }
+        .addInterceptor(loggingInterceptor)
+        .build()
 
     @Provides
     @Singleton
     @LeaderboardApiQualifier
-    fun provideLeaderboardRetrofit(): Retrofit =
-        Retrofit.Builder().baseUrl("https://rma.finlab.rs/")
-            .addConverterFactory(NetworkingJson.asConverterFactory("application/json".toMediaType()))
-            .build()
+    fun provideLeaderboardOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor
+    ): OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor(loggingInterceptor)
+        .build()
+
+    @Provides
+    @Singleton
+    @CatApiQualifier
+    fun provideCatRetrofit(
+        @CatApiQualifier okHttpClient: OkHttpClient
+    ): Retrofit = Retrofit.Builder()
+        .baseUrl("https://api.thecatapi.com/")
+        .client(okHttpClient)
+        .addConverterFactory(NetworkingJson.asConverterFactory("application/json".toMediaType()))
+        .build()
+
+    @Provides
+    @Singleton
+    @LeaderboardApiQualifier
+    fun provideLeaderboardRetrofit(
+        @LeaderboardApiQualifier okHttpClient: OkHttpClient
+    ): Retrofit = Retrofit.Builder()
+        .baseUrl("https://rma.finlab.rs/")
+        .client(okHttpClient)
+        .addConverterFactory(NetworkingJson.asConverterFactory("application/json".toMediaType()))
+        .build()
 }

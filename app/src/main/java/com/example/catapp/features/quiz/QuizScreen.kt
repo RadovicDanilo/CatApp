@@ -93,7 +93,11 @@ fun QuizScreen(
             uiState.hasFinished -> FinishedScreen(
                 timeLeft = uiState.remainingTime,
                 questions = questions,
-                onSubmit = { viewModel.submitResults() },
+                onSubmit = {
+                    coroutineScope.launch {
+                        viewModel.submitResults()
+                    }
+                },
                 correctAnswers = uiState.correctAnswerCount,
                 totalScore = uiState.totalScore
             )

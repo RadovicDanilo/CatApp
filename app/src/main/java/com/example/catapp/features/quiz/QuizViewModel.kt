@@ -94,13 +94,11 @@ class QuizViewModel @Inject constructor(
         }
     }
 
-    // TODO: Fix this
-    // TODO: improve visuals, use typography and proper colors everywhere
     suspend fun submitResults() {
-        val nickname = userAccountStore.userAccount.value?.nickname ?: "Anonymous"
+        val nickname = userAccountStore.userAccount.value!!.nickname
 
         val leaderboardPostReq = LeaderboardPostRequest(
-            nickname = nickname, result = state.value.totalScore.coerceAtMost(100.0)
+            nickname = nickname, result = state.value.totalScore.coerceAtMost(100.0).toFloat(), category = 1
         )
         quizResultRepository.postResult(leaderboardPostReq)
     }
